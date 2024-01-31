@@ -1,23 +1,42 @@
 // 3. Calculate Income tax based on old regime slabs, with the tax exception claimed, gender and age
 
-function calculateIncomeTax(income, taxExemption, gender, age) {
+const taxSlabs = [
+    { min: 0, max: 250000, rate: 0 },
+    { min: 250001, max: 500000, rate: 0.05 },
+    { min: 500001, max: 1000000, rate: 0.1 },
+    { min: 1000001, max: 1500000, rate: 0.15 }
+];
+
+function calculateIncomeTax(income, gender, age, exemptions) {
+    income -= exemptions;
+
     let taxAmount = 0;
-    // Sample logic:
-    if (income > 500000 && income <= 1000000) {
-        taxAmount = (income - 500000) * 0.2;
-    } else if (income > 1000000) {
-        taxAmount = (income - 1000000) * 0.3 + (1000000 - 500000) * 0.2;
+    taxSlabs.forEach(slab => {
+        if (income > 0) {
+            const slabAmount = Math.min(income, slab.max - slab.min + 1);
+            taxAmount += slabAmount * slab.rate;
+            income -= slabAmount;
+        }
+    });
+
+    if (gender === 'female') {
+        taxAmount -= 5000; 
     }
-    taxAmount -= taxExemption;
+
+    if (age >= 60) {
+        taxAmount -= 10000; 
+    }
 
     return taxAmount;
 }
 
-const income = 1200000; // Annual income
-const taxExemption = 100000; // Tax exemption claimed
-const gender = 'male'; // Gender (male, female, others)
-const age = 35; // Age
 
-// Calculate income tax
-const taxAmount = calculateIncomeTax(income, taxExemption, gender, age);
-console.log(`Income Tax: Rs. ${taxAmount.toFixed(2)}`);
+const income = 800000; 
+const exemptions = 100000; 
+const gender = 'female'; 
+const age = 65; 
+
+const taxAmount = calculateIncomeTax(income, gender, age, exemptions);
+console.log(`Annual Income: ${income}\nExemptions: ${exemptions}\nGender: ${gender}\nAge: ${age}`);
+console.log(`Income Tax: ${taxAmount}`);
+

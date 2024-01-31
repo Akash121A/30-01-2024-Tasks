@@ -13,18 +13,30 @@ function determineInterestRate(loanAmount, tenureMonths, creditScore) {
 
     let baseInterestRate = 8.0;
 
-    if (loanAmount > 1000000) {
-        baseInterestRate += 1.0; 
+    //Loan Amount Based Interest Rate
+    if(loanAmount >= 100000 && loanAmount <= 1000000){
+      baseInterestRate += 1.0;
+    } else if (loanAmount > 1000000 && loanAmount <= 9000000){
+        baseInterestRate += 2.0; 
+    } else {
+      baseInterestRate += 3.0
     }
     
-    if (tenureMonths > 60) {
+    //Tenure Months Based Interest Rate
+    if (tenureMonths > 50 && tenureMonths < 100) {
         baseInterestRate += 0.5;
+    } else if(tenureMonths > 100 && tenureMonths < 200){
+      baseInterestRate += 1.0;
     }
+
+    //Credit Score Based Interest Rate
     if (creditScore < 700) {
         baseInterestRate += 0.5; 
     } else if (creditScore >= 750) {
         baseInterestRate -= 0.5; 
     }
+
+    //Final Total Interest Rate is Returned
     return baseInterestRate;
 }
 
@@ -36,7 +48,7 @@ function calculateEMI(loanAmount, tenureMonths, interestRate) {
     return emi;
 }
 
-rl.question('Enter Loan Amount: ', (loanAmountInput) => {
+rl.question('Enter Loan Amount(Minimum 100000): ', (loanAmountInput) => {
   rl.question('Enter Tenure in Months: ', (tenureMonthsInput) => {
     rl.question('Enter Credit Score: ', (creditScoreInput) => {
       // Convert inputs to integers
@@ -51,10 +63,9 @@ rl.question('Enter Loan Amount: ', (loanAmountInput) => {
       console.log(`Tenure: ${tenureMonths} Months`);
       console.log(`Credit Score: ${creditScore}`);
       console.log(`Interest Rate: ${interestRate.toFixed(2)} %`);
-      console.log(`EMI: Rs.${emi.toFixed(2)}`);
+      console.log(`EMI per Month: Rs.${emi.toFixed(2)}`);
+      console.log(`Interest Amount Only: Rs.${(emi.toFixed(2)*tenureMonths-loanAmount).toFixed(2)}`);
       console.log(`Total Net Amount: Rs.${emi.toFixed(2)*tenureMonths}`);
-      console.log(`Interest Amount: Rs.${(emi.toFixed(2)*tenureMonths-loanAmount).toFixed(2)}`);
-
       rl.close();
     });
   });
